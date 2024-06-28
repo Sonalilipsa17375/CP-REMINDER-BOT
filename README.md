@@ -4,12 +4,6 @@
 
 # CP Contest Reminder Discord Bot
 
-![GitHub repo size](https://img.shields.io/github/repo-size/Sonalilipsa17375/CP-REMINDER-BOT)
-![GitHub contributors](https://img.shields.io/github/contributors/Sonalilipsa17375/CP-REMINDER-BOT)
-![GitHub stars](https://img.shields.io/github/stars/Sonalilipsa17375/CP-REMINDER-BOT?style=social)
-![GitHub forks](https://img.shields.io/github/forks/Sonalilipsa17375/CP-REMINDER-BOT?style=social)
-![GitHub issues](https://img.shields.io/github/issues/Sonalilipsa17375/CP-REMINDER-BOT)
-
 A Discord bot that fetches upcoming competitive programming contests using the CLIST API and sends reminders 30 minutes before the contest starts.
 
 ## Features
