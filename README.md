@@ -4,7 +4,7 @@
 
 # CP Contest Reminder Discord Bot
 
-A Discord bot that fetches upcoming competitive programming contests using the CLIST API and sends reminders 30 minutes before the contest starts.
+A Discord bot 🚀 that fetches upcoming competitive programming contests using the CLIST API and sends reminders 30 minutes before the contest starts.
 
 ## Features
 
@@ -44,6 +44,16 @@ A Discord bot that fetches upcoming competitive programming contests using the C
 ## Usage
 
 To use the bot, invite it to your Discord server and type `!contests` to get a list of upcoming contests.
+
+## Tech-Stack 
+
+Node.js
+Discord.js
+
+# Built Using -
+
+Built using Node.js and Discord.js
+Uses the CLIST API to fetch contest data
 
 ## Contributing
 
