@@ -43,7 +43,7 @@ A Discord bot 🚀 that fetches upcoming competitive programming contests using 
 
 ## Usage
 
-To use the bot, invite it to your Discord server and type `!contests` to get a list of upcoming contests.
+To use the bot, invite it to your Discord server and get reminder before 30 minutes of any upcoming contests.
 
 ## Tech-Stack 
 
