@@ -1,26 +1,44 @@
 require('dotenv').config();
 
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js'); 
 
-const axios = require('axios');
+const axios = require('axios'); 
+
+/* ---- bot permisssions allowed - to access msg by user (msg content permission)  ----- */
+/*--msg reply (guild messages)--- */
+// guild - server
+// intents includes the bot permissions allowed 
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 const apiKey = process.env.API_KEY;
 
+//"Sona_8112:e3fb4eb67bae124d409b4c83808a56239c007479";
+
 const reminders = new Map();
+
+
 
 client.on('ready', () => {
 
   console.log(`Logged in as ${client.user.tag}!`);
- 
-  setInterval(checkForUpcomingContests, 60 * 1000);
+
+  setInterval(checkfun, 60 * 1000);
+
 });
 
-client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
+// manual typing by user - command -'cp' - to get the contest details as msg in the discord server.
 
-  if (message.content === "!contests") {
+client.on('messageCreate', async (message) => { 
+
+  if (message.author.bot) return; 
+
+//  command -- cp (to get details at any time)
+
+  if (message.content === "cp") {
+
+  // api fetched details
+
     try {
       const response = await axios.get("https://clist.by/api/v4/contest/", {
         headers: {
@@ -28,39 +46,41 @@ client.on('messageCreate', async (message) => {
         }
       });
 
-      console.log(response.data);
-
       const contests = response.data.objects;
-      const upcomingContests = contests.filter(contest => new Date(contest.start) > new Date());
 
-      if (!upcomingContests || upcomingContests.length === 0) {
-        message.reply("No upcoming contests found.");
+      // filtered data including contests which are upcoming , (compared using present time (new Date()) and start time of contest)
+
+      const data = contests.filter(contest => new Date(contest.start) > new Date());
+
+      if (!data || data.length === 0) {
+
+        message.reply("No contests found !");
+
       } else {
-        let contestList = upcomingContests.map(contest => {
+        let list = data.map(contest => {
+
           return `**${contest.event}** hosted by **${contest.host}**\nStarts: ${new Date(contest.start).toLocaleString()}\nEnds: ${new Date(contest.end).toLocaleString()}\nLink: ${contest.href}`;
+
         }).join('\n\n');
 
-        
+        if (list.length > 2000) {
+          const msgsplit = splitIntoChunks(list, 2000);
 
-        if (contestList.length > 2000) {
-          const splitMessage = splitIntoChunks(contestList, 2000);
-          for (let part of splitMessage) {
+          for (let part of msgsplit) {
             await message.reply(part);
           }
         } else {
-          message.reply(contestList);
+          message.reply(list);
         }
       }
 
     } catch (error) {
       console.log(error);
-      message.reply("Could not fetch contests data.");
     }
   }
 });
 
-
-async function checkForUpcomingContests() {
+async function checkfun() {
   try {
     const response = await axios.get("https://clist.by/api/v4/contest/", {
       headers: {
@@ -69,62 +89,50 @@ async function checkForUpcomingContests() {
     });
 
     const contests = response.data.objects;
-    const upcomingContests = contests.filter(contest => {
 
-      const startTime = new Date(contest.start);
-      const now = new Date();
-      const diff = startTime - now;
-      return diff > 0 && diff <= 30 * 60 * 1000; 
+      const upcontests = contests.filter(contest => {
 
+      const start = new Date(contest.start);
+      const present = new Date();
+      const diff = start - present;
+
+      const val = diff > 0 && diff <= 30*60*1000; 
+
+      return val;
     });
 
-    upcomingContests.forEach(contest => {
-
+    upcontests.forEach(contest => {
       if (!reminders.has(contest.id)) {
-        const timeToReminder = new Date(contest.start) - new Date() - 30 * 60 * 1000;
+
+        const remindtime = new Date(contest.start) - new Date() - 30*60*1000;
 
         setTimeout(() => {
-          sendReminder(contest);
-          reminders.delete(contest.id);
-        }, timeToReminder);
+          send_reminder(contest);
+          reminders.delete(contest.id); 
+        }, remindtime);
 
-        reminders.set(contest.id, true);
+        reminders.set(contest.id, true); 
       }
     });
 
   } catch (error) {
-
+    
     console.log("Error checking for upcoming contests:", error);
+    
   }
 }
 
-
-function sendReminder(contest) {
-
-  const reminderMessage = `**Reminder!**\n\nThe contest **${contest.event}** hosted by **${contest.host}** is starting in 30 minutes!\nLink: ${contest.href}`;
+function send_reminder(contest) {
+  
+  const remindermsg = `**Reminder!**\n\n Contest **${contest.event}** hosted by **${contest.host}** is starting in 30 minutes!\nLink: ${contest.href}`;
 
   const channel = client.channels.cache.find(channel => channel.name === 'general'); 
+  
   if (channel) {
-
-    channel.send(reminderMessage);
-
+    channel.send(remindermsg);
   } else {
-
-    console.log("Channel not found.");
+    console.log("error");
   }
-}
-
-
-function splitIntoChunks(string, chunkSize) {
-
-  const chunks = [];
-
-  for (let i = 0, charsLength = string.length; i < charsLength; i += chunkSize) {
-
-    chunks.push(string.substring(i, i + chunkSize));
-
-  }
-  return chunks;
 }
 
 client.login(process.env.TOKEN);
