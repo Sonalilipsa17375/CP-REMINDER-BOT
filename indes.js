@@ -13,7 +13,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 const apiKey = process.env.API_KEY;
 
-//"Sona_8112:e3fb4eb67bae124d409b4c83808a56239c007479";
+
 
 const reminders = new Map();
 
